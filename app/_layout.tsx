@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ScrollView, View } from "react-native";
+import { Button, Text, View } from "react-native";
 import {
   Gesture,
   GestureDetector,
@@ -8,14 +8,7 @@ import {
 
 function useGesture() {
   return React.useMemo(() => {
-    return (
-      Gesture.Pan()
-        // All of the following have no effect on the bug.
-        // .enabled(false)
-        // .hitSlop({ bottom: -100 })
-        // .onTouchesDown((_, manager) => manager.fail())
-        .manualActivation(true)
-    );
+    return Gesture.Pan();
   }, []);
 }
 
@@ -25,14 +18,12 @@ export default function HomeScreen() {
   return (
     <GestureHandlerRootView>
       <GestureDetector gesture={gesture}>
-        <ScrollView>
-          <View
-            style={{ width: "100%", height: 300, backgroundColor: "red" }}
-          />
-          <View
-            style={{ width: "100%", height: 300, backgroundColor: "blue" }}
-          />
-        </ScrollView>
+        <View
+          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+        >
+          <Text>This is some selectable text.</Text>
+          <Button title="And this is a button" />
+        </View>
       </GestureDetector>
     </GestureHandlerRootView>
   );
