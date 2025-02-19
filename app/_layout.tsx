@@ -5,15 +5,37 @@ import {
   GestureDetector,
   GestureHandlerRootView,
 } from "react-native-gesture-handler";
-
-function useGesture() {
-  return React.useMemo(() => {
-    return Gesture.Pan();
-  }, []);
-}
+import { runOnJS, useSharedValue } from "react-native-reanimated";
 
 export default function HomeScreen() {
-  const gesture = useGesture();
+  const activationNumber = useSharedValue(0);
+  const [state, setState] = React.useState("nothing");
+
+  const gesture = React.useMemo(() => {
+    return Gesture.Pan()
+      .manualActivation(true)
+      .onTouchesDown((e, manager) => {
+        if (activationNumber.get() % 2 === 0) {
+          runOnJS(setState)("active");
+          manager.activate();
+        } else {
+          runOnJS(setState)("not active");
+          // manager.fail();
+        }
+
+        activationNumber.set(activationNumber.get() + 1);
+      })
+      .onTouchesMove((e, manager) => {
+        console.log("htht - move");
+        manager.fail();
+      })
+      .onTouchesUp((e, manager) => {
+        manager.end();
+      })
+      .onFinalize(() => {
+        // runOnJS(setState)("finalized");
+      });
+  }, [activationNumber]);
 
   return (
     <GestureHandlerRootView>
@@ -21,6 +43,7 @@ export default function HomeScreen() {
         <View
           style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
         >
+          <Text>State: {state}</Text>
           <Text>This is some selectable text.</Text>
           <Button title="And this is a button" />
         </View>
